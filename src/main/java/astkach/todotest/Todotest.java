@@ -4,6 +4,7 @@
 
 package astkach.todotest;
 
+import java.io.IOException;
 import java.util.Scanner;
 
 /**
@@ -11,11 +12,12 @@ import java.util.Scanner;
  * @author artem
  */
 public class Todotest {
-
-    public static void main(String[] args) {
+    
+    public static void main(String[] args) throws IOException {
         TaskManager manager = new TaskManager();
         
         Scanner scanner = new Scanner(System.in);
+        MenuHandler menuHandler = new MenuHandler(manager, scanner);
         
         while(true) {
             System.out.println("\n--- To-Do List Manager ---");
@@ -25,56 +27,31 @@ public class Todotest {
             System.out.println("4. Показать все задачи");
             System.out.println("5. Сохранить в файл");
             System.out.println("6. Загрузить из файла");
-            System.out.println("7. Выход");
+            System.out.println("7. Получить задачу по id");
+            System.out.println("8. Выйти");
             System.out.print("Выберите действие: ");
             
             int choice = scanner.nextInt();
             scanner.nextLine();
-            
-            switch (choice) {
-                case 1 -> {
-                    System.out.println("Input task description: ");
-                    String description = scanner.nextLine();
-                    manager.addTask(description);
-                    System.out.println("Task added...");
-                }
-                case 2 -> {
-                    System.out.println("Input task id: ");
-                    int id = scanner.nextInt();
-                    scanner.nextLine();
-                    if (manager.deleteTask(id)) {
-                        System.out.println("Task deleted");
-                    } else {
-                        System.out.println("Task not found. ID - " + id);
+
+            try {
+                switch (choice) {
+                    case 1 -> menuHandler.addTask();
+                    case 2 -> menuHandler.deleteTask();
+                    case 3 -> menuHandler.markTaskAsCompleted();
+                    case 4 -> menuHandler.printAllTasks();
+                    case 5 -> menuHandler.saveToFile();
+                    case 6 -> menuHandler.loadFromFile();
+                    case 7 -> menuHandler.getTaskById();
+                    case 8 -> {
+                        System.out.println("Exiting...");
+                        scanner.close();
+                        return;
                     }
+                    default -> System.out.println("No such option");
                 }
-                case 3 -> {
-                    System.out.println("Input task id: ");
-                    int id = scanner.nextInt();
-                    scanner.nextLine();
-                    if (manager.markTaskAsCompleted(id)) {
-                        System.out.println("\u001B[32mTask completed\u001B[0m");
-                    } else {
-                        System.out.println("Task not found. ID - " + id);
-                    }
-                }
-                case 4 -> manager.printAllTasks();
-                case 5 -> {
-                 System.out.println("Enter file name: ");
-                 String filename = scanner.nextLine();
-                 manager.saveToFile(filename);
-                }
-                case 6 -> {
-                    System.out.println("Enter file name: ");
-                    String filename = scanner.nextLine();
-                    manager.loadFromFile(filename);
-                }
-                case 7 -> {
-                    System.out.println("Exiting...");
-                    scanner.close();
-                    return;
-                }
-                default -> System.out.println("No such option");
+            } catch (IOException e) {
+                System.err.println("File error: " + e.getMessage());
             }
         }
     }

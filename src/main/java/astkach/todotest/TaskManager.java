@@ -32,6 +32,20 @@ public class TaskManager {
         nextId++;
     }
     
+    public Task getById(int id) {
+        
+        Task resultTask = null;
+        
+        for (Task task : tasks) {
+            if (task.getId() == id) {
+                resultTask = task;
+            }
+        }
+        
+        return resultTask;
+
+    }
+    
     public boolean deleteTask(int id) {
         Optional<Task> taskToRemove = tasks.stream()
                 .filter(task -> task.getId() == id)
